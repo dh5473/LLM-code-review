@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+#      - mongo
+
+  worker:
+    build: ./worker
+    depends_on:
+      - redis
+#      - mongo
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+#  mongo:
+#    image: mongo:latest
+#    ports:
+#      - "27017:27017"
+
+#  frontend:
+#    build: ./frontend
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - backend
