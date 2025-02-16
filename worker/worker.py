@@ -1,5 +1,5 @@
 from celery import Celery
-# from pymongo import MongoClient
+from llama_cpp import Llama
 import os
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
@@ -21,7 +21,16 @@ celery_app.conf.update(
     enable_utc=True,
 )
 
-# MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017")
-# client = MongoClient(MONGO_URI)
-# db = client["code_review"]
-# collection = db["reviews"]
+
+def load_llama_model():
+    model_path = "/worker/models/codellama-7b-instruct.Q2_K.gguf"
+    if not os.path.exists(model_path):
+        raise ValueError(f"Model path does not exist: {model_path}")
+
+    print("Loading Llama model...")
+    llama_model = Llama(model_path=model_path, n_ctx=2048)
+    print("Llama model loaded successfully!")
+    return llama_model
+
+
+llama_model = load_llama_model()
