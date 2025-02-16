@@ -1,15 +1,21 @@
-from worker import celery_app
+from worker import celery_app, llama_model
+
 import time
 
 
 @celery_app.task(name="code_review.task", bind=True)
-def process_code_review(
+def generate_code_review(
     self,
-    pr_diff: str,
+    pr_code_diff: str,
     pr_url: str
 ):
-    print(f"Processing review for PR {pr_url}")
-    return f"Review processed for {pr_url}"
+    if llama_model is None:
+        raise RuntimeError("failed loading model...")
+
+    prompt = f"Review this code and provide feedback:\n{pr_code_diff}"
+    output = llama_model(prompt)
+    print(output)
+    return output["choices"][0]["text"]
 
 
 @celery_app.task(name="test", bind=True)
