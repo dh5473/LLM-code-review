@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build: ./backend
@@ -14,6 +12,8 @@ services:
     depends_on:
       - redis
 #      - mongo
+    volumes:
+      - ./worker/models:/worker/models
 
   redis:
     image: redis:latest
